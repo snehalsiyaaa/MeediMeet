@@ -4,9 +4,10 @@ import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
-const CREDIT_VALUE = 10; // $10 per credit total
-const PLATFORM_FEE_PER_CREDIT = 2; // $2 platform fee
-const DOCTOR_EARNINGS_PER_CREDIT = 8; // $8 to doctor
+// Pricing in INR (₹85 per $)
+const CREDIT_VALUE = 850; // ₹850 per credit total
+const PLATFORM_FEE_PER_CREDIT = 170; // ₹170 platform fee
+const DOCTOR_EARNINGS_PER_CREDIT = 680; // ₹680 to doctor
 
 /**
  * Request payout for all remaining credits
@@ -163,9 +164,9 @@ export async function getDoctorEarnings() {
     );
 
     // Use doctor's actual credits from the user model
-    const totalEarnings = doctor.credits * DOCTOR_EARNINGS_PER_CREDIT; // $8 per credit to doctor
+    const totalEarnings = doctor.credits * DOCTOR_EARNINGS_PER_CREDIT; // ₹680 per credit to doctor
 
-    // Calculate this month's earnings (2 credits per appointment * $8 per credit)
+    // Calculate this month's earnings (2 credits per appointment * ₹680 per credit)
     const thisMonthEarnings =
       thisMonthAppointments.length * 2 * DOCTOR_EARNINGS_PER_CREDIT;
 

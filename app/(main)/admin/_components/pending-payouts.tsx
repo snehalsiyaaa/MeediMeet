@@ -115,7 +115,7 @@ export function PendingPayouts({ payouts }) {
                             <div className="flex items-center">
                               <DollarSign className="h-4 w-4 mr-1 text-emerald-400" />
                               <span>
-                                {payout.credits} credits • $
+                                {payout.credits} credits • ₹
                                 {payout.netAmount.toFixed(2)}
                               </span>
                             </div>
@@ -241,24 +241,24 @@ export function PendingPayouts({ payouts }) {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">
-                      Gross amount (10 USD/credit):
+                      Gross amount (₹850/credit):
                     </span>
                     <span className="text-white">
-                      ${selectedPayout.amount.toFixed(2)}
+                      ₹{selectedPayout.amount.toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">
-                      Platform fee (2 USD/credit):
+                      Platform fee (₹170/credit):
                     </span>
                     <span className="text-white">
-                      -${selectedPayout.platformFee.toFixed(2)}
+                      -₹{selectedPayout.platformFee.toFixed(2)}
                     </span>
                   </div>
                   <div className="border-t border-emerald-900/20 pt-3 flex justify-between font-medium">
                     <span className="text-white">Net payout:</span>
                     <span className="text-emerald-400">
-                      ${selectedPayout.netAmount.toFixed(2)}
+                      ₹{selectedPayout.netAmount.toFixed(2)}
                     </span>
                   </div>
                   <div className="border-t border-emerald-900/20 pt-3">
@@ -349,7 +349,7 @@ export function PendingPayouts({ payouts }) {
                 <div className="flex justify-between mb-2">
                   <span className="text-muted-foreground">Amount to pay:</span>
                   <span className="text-emerald-400 font-medium">
-                    ${selectedPayout.netAmount.toFixed(2)}
+                    ₹{selectedPayout.netAmount.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex justify-between">

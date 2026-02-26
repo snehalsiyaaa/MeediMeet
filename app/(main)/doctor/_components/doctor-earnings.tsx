@@ -71,7 +71,7 @@ export function DoctorEarnings({ earnings, payouts = [] }) {
     }
   }, [data]);
 
-  const platformFee = availableCredits * 2; // $2 per credit
+  const platformFee = availableCredits * 170; // ₹170 per credit
 
   return (
     <div className="space-y-6">
@@ -88,7 +88,7 @@ export function DoctorEarnings({ earnings, payouts = [] }) {
                   {availableCredits}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  ${availablePayout.toFixed(2)} available for payout
+                  ₹{availablePayout.toFixed(2)} available for payout
                 </p>
               </div>
               <div className="bg-emerald-900/20 p-3 rounded-full">
@@ -104,7 +104,7 @@ export function DoctorEarnings({ earnings, payouts = [] }) {
               <div>
                 <p className="text-sm text-muted-foreground">This Month</p>
                 <p className="text-3xl font-bold text-white">
-                  ${thisMonthEarnings.toFixed(2)}
+                  ₹{thisMonthEarnings.toFixed(2)}
                 </p>
               </div>
               <div className="bg-emerald-900/20 p-3 rounded-full">
@@ -139,7 +139,7 @@ export function DoctorEarnings({ earnings, payouts = [] }) {
               <div>
                 <p className="text-sm text-muted-foreground">Avg/Month</p>
                 <p className="text-3xl font-bold text-white">
-                  ${averageEarningsPerMonth.toFixed(2)}
+                  ₹{averageEarningsPerMonth.toFixed(2)}
                 </p>
               </div>
               <div className="bg-emerald-900/20 p-3 rounded-full">
@@ -194,7 +194,7 @@ export function DoctorEarnings({ earnings, payouts = [] }) {
                   <div>
                     <p className="text-muted-foreground">Pending Amount</p>
                     <p className="text-white font-medium">
-                      ${pendingPayout.netAmount.toFixed(2)}
+                      ₹{pendingPayout.netAmount.toFixed(2)}
                     </p>
                   </div>
                   <div>
@@ -220,16 +220,16 @@ export function DoctorEarnings({ earnings, payouts = [] }) {
                   <p className="text-white font-medium">{availableCredits}</p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">Payout Amount</p>
-                  <p className="text-white font-medium">
-                    ${availablePayout.toFixed(2)}
-                  </p>
+                    <p className="text-muted-foreground">Payout Amount</p>
+                    <p className="text-white font-medium">
+                      ₹{availablePayout.toFixed(2)}
+                    </p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">Platform Fee</p>
-                  <p className="text-white font-medium">
-                    ${platformFee.toFixed(2)}
-                  </p>
+                    <p className="text-muted-foreground">Platform Fee</p>
+                    <p className="text-white font-medium">
+                      ₹{platformFee.toFixed(2)}
+                    </p>
                 </div>
               </div>
             )}
@@ -256,11 +256,11 @@ export function DoctorEarnings({ earnings, payouts = [] }) {
           {/* Payout Information */}
           <Alert>
             <AlertCircle className="h-4 w-4" />
-            <AlertDescription className="text-sm">
-              <strong>Payout Structure:</strong> You earn $8 per credit.
-              Platform fee is $2 per credit. Payouts include all your available
-              credits and are processed via PayPal.
-            </AlertDescription>
+              <AlertDescription className="text-sm">
+                <strong>Payout Structure:</strong> You earn ₹680 per credit.
+                Platform fee is ₹170 per credit. Payouts include all your
+                available credits and are processed via PayPal.
+              </AlertDescription>
           </Alert>
 
           {/* Payout History */}
@@ -278,7 +278,7 @@ export function DoctorEarnings({ earnings, payouts = [] }) {
                         {format(new Date(payout.createdAt), "MMM d, yyyy")}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {payout.credits} credits • $
+                        {payout.credits} credits • ₹
                         {payout.netAmount.toFixed(2)}
                       </p>
                       <p className="text-xs text-muted-foreground">
@@ -326,19 +326,19 @@ export function DoctorEarnings({ earnings, payouts = [] }) {
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Gross amount:</span>
                 <span className="text-white">
-                  ${(availableCredits * 10).toFixed(2)}
+                  ₹{(availableCredits * 850).toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">
                   Platform fee (20%):
                 </span>
-                <span className="text-white">-${platformFee.toFixed(2)}</span>
+                <span className="text-white">-₹{platformFee.toFixed(2)}</span>
               </div>
               <div className="border-t border-emerald-900/20 pt-2 flex justify-between font-medium">
                 <span className="text-white">Net payout:</span>
                 <span className="text-emerald-400">
-                  ${availablePayout.toFixed(2)}
+                  ₹{availablePayout.toFixed(2)}
                 </span>
               </div>
             </div>
@@ -363,7 +363,7 @@ export function DoctorEarnings({ earnings, payouts = [] }) {
               <AlertCircle className="h-4 w-4" />
               <AlertDescription className="text-sm">
                 Once processed by admin, {availableCredits} credits will be
-                deducted from your account and ${availablePayout.toFixed(2)}{" "}
+                deducted from your account and ₹{availablePayout.toFixed(2)}{" "}
                 will be sent to your PayPal.
               </AlertDescription>
             </Alert>

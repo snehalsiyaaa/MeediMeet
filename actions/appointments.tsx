@@ -9,9 +9,29 @@ import { addDays, addMinutes, format, isBefore, endOfDay } from "date-fns";
 import { Auth } from "@vonage/auth";
 
 // Initialize Vonage Video API client
+const resolvedPrivateKey = (() => {
+  const rawKey =
+    process.env.VONAGE_PRIVATE_KEY || process.env.VONAGE_PRIVATE_KEY_BASE64;
+  if (!rawKey) {
+    throw new Error("Missing VONAGE private key env");
+  }
+
+  // If the key already looks like PEM, return as-is
+  if (rawKey.includes("BEGIN") || rawKey.includes("-----")) {
+    return rawKey;
+  }
+
+  // Otherwise assume base64-encoded key
+  try {
+    return Buffer.from(rawKey, "base64").toString("utf8");
+  } catch (err) {
+    throw new Error("Invalid VONAGE private key format");
+  }
+})();
+
 const credentials = new Auth({
   applicationId: process.env.NEXT_PUBLIC_VONAGE_APPLICATION_ID,
-  privateKey: process.env.VONAGE_PRIVATE_KEY,
+  privateKey: resolvedPrivateKey,
 });
 const options = {};
 const vonage = new Vonage(credentials, options);
