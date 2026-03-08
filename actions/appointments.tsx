@@ -7,34 +7,69 @@ import { deductCreditsForAppointment } from "@/actions/credits";
 import { Vonage } from "@vonage/server-sdk";
 import { addDays, addMinutes, format, isBefore, endOfDay } from "date-fns";
 import { Auth } from "@vonage/auth";
+import fs from "fs";
+import path from "path";
 
 // Initialize Vonage Video API client
-const resolvedPrivateKey = (() => {
+let vonageClient: Vonage | null = null;
+
+function getVonageClient() {
+  if (vonageClient) return vonageClient;
+
   const rawKey =
     process.env.VONAGE_PRIVATE_KEY || process.env.VONAGE_PRIVATE_KEY_BASE64;
   if (!rawKey) {
     throw new Error("Missing VONAGE private key env");
   }
 
-  // If the key already looks like PEM, return as-is
-  if (rawKey.includes("BEGIN") || rawKey.includes("-----")) {
-    return rawKey;
-  }
+  let resolvedKey = null;
 
-  // Otherwise assume base64-encoded key
+  // Check if the key is a file path and read it
   try {
-    return Buffer.from(rawKey, "base64").toString("utf8");
+    if (fs.existsSync(rawKey)) {
+      resolvedKey = fs.readFileSync(rawKey, "utf8");
+    } else {
+      const absPath = path.resolve(process.cwd(), rawKey);
+      if (fs.existsSync(absPath)) {
+        resolvedKey = fs.readFileSync(absPath, "utf8");
+      }
+    }
   } catch (err) {
-    throw new Error("Invalid VONAGE private key format");
+    // Ignore file system errors
   }
-})();
 
-const credentials = new Auth({
-  applicationId: process.env.NEXT_PUBLIC_VONAGE_APPLICATION_ID,
-  privateKey: resolvedPrivateKey,
-});
-const options = {};
-const vonage = new Vonage(credentials, options);
+  if (!resolvedKey) {
+    // If the key already looks like PEM, return as-is
+    if (rawKey.includes("BEGIN") || rawKey.includes("-----")) {
+      resolvedKey = rawKey.replace(/\\n/g, '\n');
+    }
+  }
+
+  if (!resolvedKey) {
+    // Otherwise assume base64-encoded key
+    try {
+      const decoded = Buffer.from(rawKey, "base64").toString("utf8");
+      if (decoded.includes("BEGIN") || decoded.includes("-----")) {
+        resolvedKey = decoded;
+      }
+    } catch (err) {
+      // Ignore decoding errors
+    }
+  }
+
+  if (!resolvedKey) {
+    throw new Error("Invalid VONAGE private key format. Ensure it's a valid file path, a PEM string, or a base64 encoded PEM string.");
+  }
+
+  const credentials = new Auth({
+    applicationId: process.env.NEXT_PUBLIC_VONAGE_APPLICATION_ID,
+    privateKey: resolvedKey,
+  });
+
+  const options = {};
+  vonageClient = new Vonage(credentials, options);
+  return vonageClient;
+}
 
 /**
  * Book a new appointment with a doctor
@@ -160,7 +195,7 @@ export async function bookAppointment(formData) {
     return { success: true, appointment: appointment };
   } catch (error) {
     console.error("Failed to book appointment:", error);
-    throw new Error("Failed to book appointment:" + error.message);
+    throw new Error("Failed to book appointment:" + (error instanceof Error ? error.message : String(error)));
   }
 }
 
@@ -169,10 +204,12 @@ export async function bookAppointment(formData) {
  */
 async function createVideoSession() {
   try {
-    const session = await vonage.video.createSession({ mediaMode: "routed" });
+    const vonage = getVonageClient();
+    const session = await vonage.video.createSession({ mediaMode: "routed" as any });
     return session.sessionId;
   } catch (error) {
-    throw new Error("Failed to create video session: " + error.message);
+    console.error("Failed to create video session:", error);
+    throw new Error("Failed to create video session: " + (error instanceof Error ? error.message : String(error)));
   }
 }
 
@@ -270,7 +307,8 @@ export async function generateVideoToken(formData) {
     });
 
     // Generate the token with appropriate role and expiration
-    const token = vonage.video.generateClientToken(appointment.videoSessionId, {
+    const vonage = getVonageClient();
+    const token = vonage.video.generateClientToken(appointment.videoSessionId as string, {
       role: "publisher", // Both doctor and patient can publish streams
       expireTime: expirationTime,
       data: connectionData,
@@ -293,7 +331,7 @@ export async function generateVideoToken(formData) {
     };
   } catch (error) {
     console.error("Failed to generate video token:", error);
-    throw new Error("Failed to generate video token:" + error.message);
+    throw new Error("Failed to generate video token:" + (error instanceof Error ? error.message : String(error)));
   }
 }
 
@@ -422,6 +460,6 @@ export async function getAvailableTimeSlots(doctorId) {
     return { days: result };
   } catch (error) {
     console.error("Failed to fetch available slots:", error);
-    throw new Error("Failed to fetch available time slots: " + error.message);
+    throw new Error("Failed to fetch available time slots: " + (error instanceof Error ? error.message : String(error)));
   }
 }
